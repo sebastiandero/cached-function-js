@@ -1,0 +1,31 @@
+{
+  "name": "cached-functions-js",
+  "version": "1.0.0",
+  "description": "A fast hash based function input to output cacher",
+  "main": "./dist/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebastiandero/cached-function-js.git"
+  },
+  "keywords": [
+    "memoize",
+    "cache",
+    "cached",
+    "cached-functions",
+    "functions",
+    "js",
+    "ts"
+  ],
+  "author": "Sebastian De Ro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sebastiandero/cached-function-js/issues"
+  },
+  "homepage": "https://github.com/sebastiandero/cached-function-js#readme",
+  "devDependencies": {
+    "typescript": "^3.1.6"
+  }
+}
