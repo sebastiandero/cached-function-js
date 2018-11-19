@@ -35,63 +35,46 @@
 export function cachedFunction<T>(f: (...args: any[]) => T): (...args: any[]) => T {
     const cache = {};
     return (...args): T => {
-        return getCacheOrRunFunction(cache, args, f);
-    };
-}
+        const key = hashObject(args);
 
-/**
- * creates a function that is cache enabled and caches each input parameter set to a return value.
- * this should only be used on functions that behave like mathematical functions in that they have only one possible return for each parameter set
- *
- * the returned value from the inner function is, if the return type is an object is cloned using object.assign
- *
- * uses simple bitwise hashing
- *
- * @param f the function in the form of an arrow function (<args>) => {<logic + return>}
- */
-export function cachedFunctionDeepCopy<T>(f: (...args: any[]) => T): (...args: any[]) => T {
-    const cache = {};
-    return (...args): T => {
-        const result = getCacheOrRunFunction(cache, args, f);
-        if (typeof(result) === 'object') {
-            return Object.assign({}, result);
-        } else {
-            return result;
+        if (cache.hasOwnProperty(key)) {
+            return cache[key];
         }
+
+        const result = f(...args);
+        cache[key] = result;
+        return result
     };
-}
-
-function getCacheOrRunFunction<T>(cache: any, args: any[], f: (...args: any[]) => T): T {
-    const key = hashObject(args);
-
-    if (cache.hasOwnProperty(key)) {
-        return cache[key];
-    }
-
-    const result = f(...args);
-    cache[key] = result;
-    return result;
 }
 
 /* tslint:disable:no-bitwise */
 function hashPrimitiveAsString(str: string) {
     let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        const character = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + character;
-        hash = hash & hash; // Convert to 32bit integer
+    if (str != null) {
+        str = str + '';
+        for (let i = 0; i < str.length; i++) {
+            const character = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + character;
+            hash = hash & hash; // Convert to 32bit integer
+        }
     }
     return hash;
 }
 
-function hashObject(object: any): number {
+function hashObject(object: any, allObjects?: any[]): number {
     let hash = 0;
-    for (const property in object) {
-        if (object.hasOwnProperty(property)) {
-            if (typeof(property) === 'object' && property !== object) {
-                hash += hashObject(object);
-            } else if (typeof(property) !== 'function') {
-                hash += hashPrimitiveAsString(property);
+    if (!allObjects) {
+        allObjects = [];
+        allObjects.push(object);
+    }
+    if (object != null) {
+        for (const key of Object.getOwnPropertyNames(object)) {
+            const value = object[key];
+            if (typeof(value) === 'object' && !allObjects.some(value1 => value1 === value)) {
+                allObjects.push(value);
+                hash += hashObject(value, allObjects);
+            } else if (typeof(value) !== 'function') {
+                hash += hashPrimitiveAsString(value);
             }
         }
     }
