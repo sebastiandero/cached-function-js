@@ -12,6 +12,19 @@ The hashing function used is **xxhash**.
 
 ## how to use
 
+create a cached member method in typescript(the object in the decorator is optional):
+```typescript
+import {Cached} from 'cached-function-js'
+class Abc {
+        aVal = 2
+
+        @Cached({hashingStrategy: new MyOwnHashingStrat(), valueMappingStrategy: new MyOwnMapper()})
+        myFun(a: number, b: string) {
+            return a.toString() + b + this.aVal.toString()
+        }
+    }
+```
+
 Create a simple cached function following the "memoized function" pattern:
 ```javascript
 import {cachedFunction} from 'cached-function-js'

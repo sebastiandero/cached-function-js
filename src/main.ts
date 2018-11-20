@@ -41,15 +41,15 @@ const defaultOptions: CachedFunctionOptions = {
  *
  * the returned value from the inner function is, if the return type is an object always a reference to the object in cache
  *
- * uses simple bitwise hashing
+ * uses xxhash hashing for the cache
  *
  * @param f the function in the form of an arrow function (<args>) => {<logic + return>}
  * @param options an object of type CachedFunctionOptions
  */
-export function cachedFunction<T>(f: (...args: any[]) => T, options: CachedFunctionOptions = {}): (...args: any[]) => T {
+export function cachedFunction<T, S>(f, options: CachedFunctionOptions = {}, thisArg?: any): any {
     const cache = {};
     options = {...defaultOptions, ...options}
-    return (...args): T => {
+    return function (...args): T {
         if (!options.hashingStrategy) {
             throw 'supplied invalid hashing strategy to cachedFunction'
         }
@@ -59,10 +59,37 @@ export function cachedFunction<T>(f: (...args: any[]) => T, options: CachedFunct
             return cache[key];
         }
 
-        const result = f(...args);
+        let result
+        if (thisArg) {
+            result = f.apply(thisArg, args)
+        } else {
+            result = f(...args);
+        }
+
         cache[key] = result;
         return result
     };
+}
+
+/**
+ * this is a typescript decorator!! with support for "this"
+ *
+ * creates a function that is cache enabled and caches each input parameter set to a return value.
+ * this should only be used on functions that behave like mathematical functions in that they have only one possible return for each parameter set
+ *
+ * the returned value from the inner function is, if the return type is an object always a reference to the object in cache
+ *
+ * uses simple bitwise hashing
+ */
+export function Cached(options?: CachedFunctionOptions) {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        let f = descriptor.value
+        descriptor.value = function (...args) {
+            // @ts-ignore
+            return cachedFunction(f, options, this)(...args)
+        };
+        return descriptor
+    }
 }
 
 function objectToString(object: any, options: CachedFunctionOptions, allObjects?: any[], path?: string): string {
