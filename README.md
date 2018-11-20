@@ -1,5 +1,15 @@
 # cached-functions-js
 
+## Summary
+
+This library caches and maps your parameters to a return value.
+
+It does this by hashing your parameters.
+
+It has **typescript** typings!!
+
+The hashing function used is **xxhash**.
+
 ## how to use
 
 Create a simple cached function following the "memoized function" pattern:
@@ -41,4 +51,17 @@ export class MyClass{
         return someVeryExpensiveComputation()
     })
 }
+```
+
+You can provide your own strategies in the options object, all of them are optional though.
+
+If you write your own (and use typescript) please use the _ValueMappingStrategy_, _HashStrategy_ interfaces 
+for your own convenience.
+
+```typescript
+import {cachedFunction} from 'cached-function-js'
+
+const myFunc = cachedFunction((someObject: any, someNumber: any) => {
+    return someVeryExpensiveComputation(someObject, someNumber)
+}, {hashingStrategy: new MyOwnHashingStrat(), valueMappingStrategy: new MyOwnMapper()})
 ```

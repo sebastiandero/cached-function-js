@@ -22,6 +22,19 @@
  SOFTWARE.
  */
 
+import {HashStrategy, XXHashStrategy} from "./hash"
+import {DefaultValueMappingStrategy, ValueMappingStrategy} from "./value-mapping"
+
+interface CachedFunctionOptions {
+    hashingStrategy?: HashStrategy;
+    valueMappingStrategy?: ValueMappingStrategy;
+}
+
+const defaultOptions: CachedFunctionOptions = {
+    hashingStrategy: new XXHashStrategy(),
+    valueMappingStrategy: new DefaultValueMappingStrategy()
+}
+
 /**
  * creates a function that is cache enabled and caches each input parameter set to a return value.
  * this should only be used on functions that behave like mathematical functions in that they have only one possible return for each parameter set
@@ -31,11 +44,16 @@
  * uses simple bitwise hashing
  *
  * @param f the function in the form of an arrow function (<args>) => {<logic + return>}
+ * @param options an object of type CachedFunctionOptions
  */
-export function cachedFunction<T>(f: (...args: any[]) => T): (...args: any[]) => T {
+export function cachedFunction<T>(f: (...args: any[]) => T, options: CachedFunctionOptions = {}): (...args: any[]) => T {
     const cache = {};
+    options = {...defaultOptions, ...options}
     return (...args): T => {
-        const key = hashObject(args);
+        if (!options.hashingStrategy) {
+            throw 'supplied invalid hashing strategy to cachedFunction'
+        }
+        const key = options.hashingStrategy.hashString(objectToString(args, options));
 
         if (cache.hasOwnProperty(key)) {
             return cache[key];
@@ -47,36 +65,34 @@ export function cachedFunction<T>(f: (...args: any[]) => T): (...args: any[]) =>
     };
 }
 
-/* tslint:disable:no-bitwise */
-function hashPrimitiveAsString(str: string) {
-    let hash = 0;
-    if (str != null) {
-        str = str + '';
-        for (let i = 0; i < str.length; i++) {
-            const character = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + character;
-            hash = hash & hash; // Convert to 32bit integer
-        }
-    }
-    return hash;
-}
-
-function hashObject(object: any, allObjects?: any[]): number {
-    let hash = 0;
+function objectToString(object: any, options: CachedFunctionOptions, allObjects?: any[], path?: string): string {
+    let stringRepresentation = "";
     if (!allObjects) {
         allObjects = [];
         allObjects.push(object);
     }
+    if (!path) {
+        path = "_[param]"
+    }
+
     if (object != null) {
         for (const key of Object.getOwnPropertyNames(object)) {
-            const value = object[key];
+            if (!options.valueMappingStrategy) {
+                throw 'supplied invalid value mapping strategy to cachedFunction'
+            }
+            const value = options.valueMappingStrategy.map(object[key]);
             if (typeof(value) === 'object' && !allObjects.some(value1 => value1 === value)) {
+                let newPath = `${path}_${key}`
                 allObjects.push(value);
-                hash += hashObject(value, allObjects);
-            } else if (typeof(value) !== 'function') {
-                hash += hashPrimitiveAsString(value);
+                stringRepresentation += objectToString(value, options, allObjects, newPath);
+            } else if (isPrimitiveNonNull(value)) {
+                stringRepresentation += `${path}_[${typeof(value)}]${key}: ${value}`;
             }
         }
     }
-    return hash;
+    return stringRepresentation;
+}
+
+function isPrimitiveNonNull(value: any) {
+    return typeof(value) === 'string' || typeof(value) === 'number' || typeof(value) === 'boolean';
 }
