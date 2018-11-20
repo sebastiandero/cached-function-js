@@ -5,7 +5,7 @@
   "main": "./dist/main.js",
   "types": "./dist/main.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,10 @@
     "cached-functions",
     "functions",
     "js",
-    "ts"
+    "ts",
+    "typescript",
+    "javascript",
+    "caching"
   ],
   "author": "Sebastian De Ro",
   "license": "MIT",
@@ -27,6 +30,13 @@
   },
   "homepage": "https://github.com/sebastiandero/cached-function-js#readme",
   "devDependencies": {
+    "@types/jest": "^23.3.9",
+    "@types/xxhashjs": "^0.1.1",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.4",
     "typescript": "^3.1.6"
+  },
+  "dependencies": {
+    "xxhashjs": "^0.2.2"
   }
 }
