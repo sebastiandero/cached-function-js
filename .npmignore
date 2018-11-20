@@ -223,3 +223,8 @@ typings/
 # End of https://www.gitignore.io/api/node,intellij+all,webstorm+all,visualstudiocode
 tsconfig.json
 src/
+
+*.test.*
+
+yarn.lock
+yarn-error.log

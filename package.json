@@ -2,10 +2,11 @@
   "name": "cached-functions-js",
   "version": "1.1.0",
   "description": "A fast hash based function input to output cacher",
-  "main": "./dist/main.js",
-  "types": "./dist/main.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
