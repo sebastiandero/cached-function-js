@@ -46,7 +46,7 @@ const defaultOptions: CachedFunctionOptions = {
  * @param f the function in the form of an arrow function (<args>) => {<logic + return>}
  * @param options an object of type CachedFunctionOptions
  */
-export function cachedFunction<T, S>(f, options: CachedFunctionOptions = {}, thisArg?: any): any {
+export function cachedFunction<T, S>(f, options: CachedFunctionOptions = {}): any {
     const cache = {};
     options = {...defaultOptions, ...options}
     return function (...args): T {
@@ -60,8 +60,10 @@ export function cachedFunction<T, S>(f, options: CachedFunctionOptions = {}, thi
         }
 
         let result
-        if (thisArg) {
-            result = f.apply(thisArg, args)
+        // @ts-ignore
+        if (this) {
+            // @ts-ignore
+            result = f.apply(this, args)
         } else {
             result = f(...args);
         }
@@ -84,9 +86,10 @@ export function cachedFunction<T, S>(f, options: CachedFunctionOptions = {}, thi
 export function Cached(options?: CachedFunctionOptions) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         let f = descriptor.value
+        // @ts-ignore
+        let cachedF = cachedFunction(f, options)
         descriptor.value = function (...args) {
-            // @ts-ignore
-            return cachedFunction(f, options, this)(...args)
+            return cachedF.apply(this, args)
         };
         return descriptor
     }

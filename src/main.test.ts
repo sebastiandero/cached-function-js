@@ -125,11 +125,14 @@ test('should use decorator', () => {
 
 test('should support this in decorator function', () => {
 
+    let mock = jest.fn((a: number, b: string) => `${a}${b}`)
+
     class Abc {
         aVal = 2
 
         @Cached()
         myFun(a: number, b: string) {
+            mock()
             return a.toString() + b + this.aVal.toString()
         }
     }
@@ -137,4 +140,29 @@ test('should support this in decorator function', () => {
     let a = new Abc();
 
     expect(a.myFun(1, "a")).toBe("1a2");
+    expect(mock.mock.calls.length).toBe(1);
 });
+
+test('should cache in decorator function', () => {
+
+    let mock = jest.fn((a: number, b: string) => `${a}${b}`)
+
+    class Abc {
+        aVal = 2
+
+        @Cached()
+        myFun(a: number, b: string) {
+            mock()
+            return a.toString() + b + this.aVal.toString()
+        }
+    }
+
+    let a = new Abc();
+    a.myFun(1, "a")
+    a.myFun(1, "a")
+    a.myFun(1, "a")
+
+    expect(a.myFun(1, "a")).toBe("1a2");
+    expect(mock.mock.calls.length).toBe(1);
+});
+
