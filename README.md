@@ -78,3 +78,14 @@ const myFunc = cachedFunction((someObject: any, someNumber: any) => {
     return someVeryExpensiveComputation(someObject, someNumber)
 }, {hashingStrategy: new MyOwnHashingStrat(), valueMappingStrategy: new MyOwnMapper()})
 ```
+
+## Changelog
+
+### [2.0.0] - 2015-12-03
+#### Added
+ - Support for UMD, ES6 and CommonJS(CJS) modules using RollupJS
+ - Now supports browsers because of UMD support
+#### Removed
+ - Symbols as they are supported from es6 onward
+#### Changed
+ - changed target from es6 to es5

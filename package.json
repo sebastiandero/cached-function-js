@@ -1,12 +1,16 @@
 {
   "name": "cached-functions-js",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "A fast hash based function input to output cacher",
-  "main": "./dist/index.js",
+  "main": "./dist/cjs/cached-functions-js.cjs.js",
+  "module": "./dist/esm/cached-functions-js.esm.js",
+  "browser": "./dist/umd/cached-functions-js.umd.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "test": "jest",
-    "build": "tsc"
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "pretest": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -34,7 +38,13 @@
     "@types/jest": "^23.3.9",
     "@types/xxhashjs": "^0.1.1",
     "jest": "^23.6.0",
+    "rollup": "^0.67.3",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rollup-plugin-typescript2": "^0.18.0",
     "ts-jest": "^23.10.4",
+    "tslib": "^1.9.3",
     "typescript": "^3.1.6"
   },
   "dependencies": {

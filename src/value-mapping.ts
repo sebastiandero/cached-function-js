@@ -33,9 +33,6 @@ export interface ValueMappingStrategy {
 
 export class DefaultValueMappingStrategy implements ValueMappingStrategy {
     map(value: any): any {
-        if (typeof(value) === 'symbol') {
-            return Symbol.keyFor(value)
-        }
         return value
     }
 }

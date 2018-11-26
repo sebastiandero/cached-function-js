@@ -223,3 +223,5 @@ typings/
 # End of https://www.gitignore.io/api/node,intellij+all,webstorm+all,visualstudiocode
 
 dist/
+
+.rpt2_cache

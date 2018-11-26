@@ -228,3 +228,5 @@ src/
 
 yarn.lock
 yarn-error.log
+
+.rpt2_cache

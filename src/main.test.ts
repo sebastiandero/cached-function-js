@@ -84,19 +84,6 @@ test('should cache with array', () => {
     expect(mock.mock.calls.length).toBe(2);
 });
 
-test('should cache symbol values', () => {
-    // @ts-ignore
-    let mock = jest.fn((a: symbol, b: symbol) => Symbol.keyFor(a) + Symbol.keyFor(b))
-    let fun = cachedFunction(mock)
-
-    fun(Symbol.for("a"), Symbol.for("b"))
-    fun(Symbol.for("a"), Symbol.for("b"))
-    fun(Symbol.for("b"), Symbol.for("b"))
-
-    expect(fun(Symbol.for("a"), Symbol.for("b"))).toBe("ab");
-    expect(mock.mock.calls.length).toBe(2);
-});
-
 test('should cache with options', () => {
     let mock = jest.fn((a: number, b: string) => a.toString() + b)
     let fun = cachedFunction(mock, {hashingStrategy: new XXHashStrategy()})
